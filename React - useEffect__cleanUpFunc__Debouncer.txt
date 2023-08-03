@@ -1,0 +1,91 @@
+ABOUT THIS NOTE:
+
+A little explanation on how To debounce with React useEffect Hook and how everything comes together.
+
+Note :
+    If you are struggling to understand this I do recommend you to google what is a debouncer in javascript and why this technique exists.
+    It'll make your life easier to understand.
+
+
+ 
+// ---------------------- THE USEEFFECT HOOK ---------------------- //
+
+
+"The useEffect hook is used to prevent side Effects, which in essence are anything but the react component."
+
+    The useEffect hook structure is:
+
+    useEffect( yourFunction, [...dependencies] )
+
+    Here yourFunction is called on two scenarios:
+        1 - Any of the dependencies is changed ( on the react lesson example, the typing on the email/password inputs)
+        2 - The component is Unmounted 
+            ( That means when the component removed from the DOM either on rerender or page closed. IMPORTANT note
+              Rerender is what react is doing on all those elements whenever the state is changed. )
+
+
+// ---------------------------------------------------------------- //
+
+
+Now,
+
+A setTimeout function as said before has nothing to do with the React component. I'll improve the User Experience 
+and App performance. But again, it has nothing to add to the Component Render. In other words It'll create a 'Side Effect'.
+
+
+So, the next step is to use the useEffect Hook to handle the setTimeout function.
+
+    And the structure of that will be:
+
+        useEffect( () => {
+            setTimeout( yourFunction, timeoutValue)
+        }, [...dependencies])
+
+Here we did two steps. 
+    1 - Built the useEffect Hook with an Arrow Function, so we can trigger the setTimeout only when the useEffect is triggered
+    2 - Moved yourFunction() to the setTimeout Callback.
+
+
+
+// ---------------------------------------------------------------- //
+
+
+The last step on this logic is: Some side effects need a clean up. 
+
+If we dont clean the setTimeout() we are triggering they will be stored on the memory forever. When you think of many components being rendered on every  change of the state, the timeouts will start to pille up or get in conflict with each other. And there is where we need the clean up.
+
+On the useEffect Hook, the cleanup is a returned function. That is essencialy the reason of the useEffect return function.
+
+Important note: The returned function is only returned when the component is rerendered or Unmounted. That's why Maximilian said React helped us with the debouncing. It makes easier to clear the setTimeout.
+
+    The final structure is:
+
+        useEffect( () => {
+            const yourTimer = setTimeout( yourFunction, timeoutValue) 
+            // You NEED to have your setTimeout stored in a variable to clear it later
+
+            return () => { clearTimeout( yourTimer ) } 
+            // This function will be called whenever the object is rerendered or unmounted.
+                }, [...dependencies])
+
+When the useEffect is triggered it'll run the setTimeout. 
+If useEffect is triggered again before the setTimeout time is over, it'll trigger the return function ( the Clean up function)
+Which will cancel the previous setTimeout and start a new one.
+
+
+// ---------------------------------------------------------------- //
+
+
+
+    useEffect( () => {
+        const yourTimer = setTimeout( () => {
+            // yourFunction as an Arrow function
+            // ...
+
+        }), timeoutValue) 
+
+        return () => { clearTimeout( yourTimer ) } 
+      
+        }, [...dependencies])
+
+

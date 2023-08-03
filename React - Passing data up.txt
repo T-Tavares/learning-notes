@@ -1,0 +1,88 @@
+ABOUT THIS NOTE: 
+
+    Understanding how to pass props up to a parent element. 
+    This method uses a function on the parent element that is called on the child  to retrieve the data ( pass the data to the parent.)
+ 
+ _____________________________________________________________
+|                         Component.js                        |
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+_____________________HANDLER  - GET DATA_______________________
+
+    function handlerFunction(entrylData) {
+        const entryData = data;
+    }
+    
+    ♦︎ Gets data and stores on prop 
+    ♦︎ Is called on the ChildComponent props as it's value 
+      (ex: below)
+    ♦︎ On initial Component it just retrieves the user Input
+      data.
+
+_______________________ELEMENT - BRIDGE________________________ 
+
+    < ChildComponent onChildPropMethod = { handlerFunction } />
+
+    ♦︎ Prop MUST match the parent prop method name.
+    ♦︎ Handler is called as prop value
+
+______________________PROPS - PASS DATA UP______________________
+
+    props.onPropMethod(data)
+
+    ♦︎ Saves the data sorted on handlerFunction to pass it up
+    ♦︎ This props MUST match the name on the parent component. 
+
+
+ _____________________________________________________________
+|                        ExpenseForm.js                       |
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+____________________________HANDLER___________________________
+
+    Get data from user Input -> submitHandler()
+    store data -> const expenseData;
+    set onSaveExpenseData prop.
+    
+____________________________ELEMENT____________________________
+
+    Because is the starting point there isn't a bridge
+
+_____________________________PROPS_____________________________
+
+
+    props.onSaveExpenseData(expenseData)
+
+ _____________________________________________________________
+|                        NewExpense.js                        |
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+____________________________HANDLER___________________________
+ 
+    Get data from ExpenseForm.props.onSaveExpenseData
+    function saveExpenseDataHandler() {sorts const expenseData}
+    set onAddExpense prop
+
+____________________________ELEMENT____________________________
+
+    <ExpenseForm onSaveExpenseData = {saveExpenseDataHandler}
+
+_____________________________PROPS_____________________________
+
+    props.onAddExpense(expenseData)
+
+ _____________________________________________________________
+|                            App.js                           |
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+____________________________HANDLER___________________________
+    
+    Get data from NewExpense.props.onAddExpense
+    function addExpenseHandler() { sort const expenseData }
+    Rerender / Update Components with data
+
+____________________________ELEMENT____________________________
+
+    <NewExpense onAddExpense = {addExpenseHandler}
+
+    
+_____________________________PROPS_____________________________
+
+    Last Component, does not pass anything up so no props is needed
