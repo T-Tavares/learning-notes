@@ -1,0 +1,118 @@
+ABOUT THIS NOTE:
+
+Just a useReducer() structure explanation for future reference.
+
+
+That's the structure of this hook. It's easier to write this code of line and from there create all the necessary functinos and objects 
+
+    const [state, dispatchFunction] = useReducer( reducerFunction, initialState)
+
+    state - thats the same as the other react state objects.
+    initialState - will feed the state on the first run of the app
+    dispatchFunction - HAVE to pass an action to guide the reducerFunction on the right task to do.
+    reducerFunction - will be used to update the state.
+
+
+                _______________________________________________________
+               /                                                       |
+              /       pass initial state obj to state                  |
+             \/                                                        |
+    const [state, dispatchFunction] = useReducer( reducerFunction, initialState)
+                    |                                  /\
+                    |  pass action to reduerFunction   /                
+                    |_________________________________/ 
+
+
+Steps to setup the useReducer()
+
+1. Create a Action Map obj.
+    - So we don't have to hard code the actions to be passed to the reducerFunction.
+    - This will help to prevent typos and speed up our coding by levaraging VS-Code autocomplete.
+
+    const ACTIONS = {
+        DO_SOMETHING: 'DO_SOMETHING',
+        DO_SOMETHINGELSE: 'DO_SOMETHINGELSE',
+        UPDATE_COUNT: 'UPDATE_COUNT ',
+        ...
+    }
+
+2. Create a initialState Object.
+    - Just to keep the code cleaner and easier to read.
+
+    const initialState = {
+        value: '',
+        isActive: false,
+        isComplete: false,
+        ...
+    }
+
+    With complex objects:
+
+    const initialState = {
+
+        name: {
+            firstName: '',
+            middleName: '',
+            lastName: ''
+        },
+        contact: {
+            phone: '',
+            email: '',
+        }
+        updatesCount: 0
+        ...
+    }
+
+3. Create the reduceFunction:
+    - Usually is structured on a switch loop.
+    - Will have a state and action, where the state is... the state. 
+    
+    - The action will do two things here.
+
+        ● First: Through action.type, is where we pass which action the reduceFunction will do. (ex: Which component will update or check)
+        ● Second: Is used to pass any extra value or props to the reduceFunction. Devs refer to it as Playload.
+
+    - Here we will use the ACTIONS map obj we created on the first step. ( So we don't hard code the actions remember?)
+
+
+    const dispatchFunction = (state, action) => {
+        switch (action.type) {
+            case ACTIONS.DO_SOMETHING : {
+                // do what you want to do
+                return newState
+            }
+            case ACTIONS.DO_SOMETHINGELSE : {
+                // do what you want to do
+                return newState
+            }
+            case ACTIONS.UPDATE_COUNT : {
+                return {...state, updatesCount: updatesCount + 1} // example on destructuring used to return a new state obj.
+            }
+        })
+    }
+
+    Important!: It's a bad practice to edit the state directly on the reducer function 
+        ex:          
+
+        case ACTIONS.DO_SOMETHING : {
+            // do what you want to do
+            state.name.firstName = 'Name' <-- WRONG!!!
+            return newState
+        } 
+
+    The returned state will be replace the state.
+    So ideally just create a new state and return it.
+
+
+// ---------------------------------------------------------------- //
+
+
+Destructure the useReducer state object also helps to keep the code clean and readable.
+A good use for it is on useEffect dependencies.
+
+    const { email, phone } = state.contact
+
+    useEffect(() => dispatch({type: ACTIONS.UPDATE_COUNT}, [email, phone]))
+
+    Not the greatest example but when email or phone is changed the reduceFunction is triggered with the 
+    ACTIONS.UPDATE_COUNT.

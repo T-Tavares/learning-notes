@@ -1,0 +1,76 @@
+ABOUT THIS NOTE:
+
+    Understanding and implementing the useContext React Hook
+
+    useContext as the name sugests is a hook to give context to a state. 
+    Is used for global variables. Like a theme selector or a Login Authentication.
+
+
+To use context in React we need to follow three steps.
+
+    1. Create a context
+    2. Create a provider
+    3. Through the provider and useContext hook, consume the context
+
+
+My prefered way to do this was:
+    In a context file I
+        - Create the context 
+        - Use the useContext hook on the context and export it
+        - Create and export the Provider
+
+    which would look like this:
+
+    import React, {createContext, useContext, useState}
+
+
+    // -------------------- Creating the context -------------------- //
+
+    const ComponentContext = createContext({
+        loginStats: false,
+        login: () => {} // Function Placeholder, for each function that will change this state we need a placeholder
+        logout: () => {} // Function Placeholder, for each function that will change this state we need a placeholder
+    })
+
+
+    // ----- Exporting function that will create a  useContext ------ //
+
+    export const useComponentContext = () => useContext(ComponentContext);
+
+
+    // --------------- Create and export the Provider --------------- //
+
+    // Children below is just a easy destructure of the props. Like on any other component.
+
+    export const ComponentProvider = ({children}) => {
+        const [loginStats, setLoginStats] = useState(false)
+        const login = () => setLoginStats(true)
+        const logout = () => setLoginStats(false)
+
+        return (
+
+            // We call the React.Provider so we have acess to the context values.
+            // everything inside the obj 'value' will be passed on.
+
+            <ComponentContext.Provider value{{loginStats, login, logout}}>
+                {children}
+            </ComponentContext.Provider>
+        )
+    }
+
+Note. with that pattern we just have to wrap the main element (probably the App.js) on the provider export
+
+
+...
+return (
+    <ComponentProvider>
+        <App />
+    </ComponentProvider>
+)
+
+and on the child components we need the values of that state we just need to import and call useComponentContext()
+destructuring makes everything cleaner as well.
+
+...
+    const {loginStats, login, logout} = useComponentContext()
+
