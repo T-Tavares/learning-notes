@@ -1,0 +1,109 @@
+ABOUT THIS NOTE:
+
+    To understand this pattern of personalised useContext first go back to "React - useContext.txt"
+    Once that knowledge is solid this note will be easier to read and understand.
+    That's because TS types will add another layer of complexity to it (nothing terrible, don't worry).
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------- STRUCTURE AND PATTERN ------------------------- //
+// -------------------------------------------------------------------------- //
+
+To use context in React we need to follow four steps.
+
+    1. Create Types and Placeholders
+    2. Create Context
+    3. Create and Export Personalised useContext
+    4. Create and Export Provider
+
+
+Those steps placed in a tsx file will look like that.
+    // -------------------------------------------------------------------------- //
+    // --------------------------------- IMPORTS -------------------------------- //
+    // -------------------------------------------------------------------------- //
+
+    import {createContext, useContext, useState, useEffect} from 'react';
+
+    // You can also import useEffect or any other hook needed, even other useContexts.
+    // Just be careful with the data flow so you don't go crazy 🤪
+    // On this note I'll simulate a context that will fetch data for a ephemeral database copy (locally).
+
+    // -------------------------------------------------------------------------- //
+    // --------------------- CREATING TYPES AND PLACEHOLDERS -------------------- //
+    // -------------------------------------------------------------------------- //
+
+
+    // Since is a fetch async func and nothing is being returned, instead we are savind it on the useState
+    
+    interface ComponentContext {    
+        database: DatabaseType [];
+        fetchData: () => Promise<void>; 
+    }
+
+    // Still can't explain why, but on functions placeholder you need a comment inside the {} so TS does not throw any error
+    // It can be any comment but I like to put is as {/* placeholder */} so it gives me a visual clue on what it is.
+
+    const ComponentContextPlaceholders: ComponentContext = {
+
+        database: [],
+        fetchData: async () => {/* placeholder */} 
+    }
+
+    // -------------------------------------------------------------------------- //
+    // ---------------------------- COMPONENT CONTEXT --------------------------- //
+    // ---- CREATE AND EXPORT COMPONENT CONTEXT ( PERSONALISED USERCONTEXT ) ---- //
+    // -------------------------------------------------------------------------- //
+
+
+    // Don't worry TS is smart enought to tell a type from the context even if the they have the same name
+
+    const ComponentContext = createContext(ComponentContextPlaceholders);
+    export const useComponentContext = () => useContext(ComponentContext)
+
+    // -------------------------------------------------------------------------- //
+    // ------------------ CREATE AND EXPORT COMPONENT PROVIDER ------------------ //
+    // -------------------------------------------------------------------------- //
+
+    export const ComponentProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
+        const [database, setDatabase] = useState<DB_Type[]>([])
+
+        const fetchData = async () => {
+            // Your logic to fetch data
+            // fetch, axios, whatever you are using.
+            setDatase(reponse)
+        }
+    
+
+        useEffect(() => void fetchData()) 
+        // The useEffects for fetching data need that void keyword before invoking the function.
+        // TS needs to have it explicit that nothing will be returned from that useEffect
+
+        return (
+            <ComponentContext.Provider value{{database, fetchData}}>{children}</ComponentContext>
+        );
+    }
+
+// -------------------------------------------------------------------------- //
+
+
+// -------------------------------------------------------------------------- //
+// ------------------------------- FINAL NOTES ------------------------------ //
+// -------------------------------------------------------------------------- //
+
+The rest follows as on my old notes for useContext on React with JS
+Note. with that pattern we just have to wrap the main element (probably the App.js) on the provider export
+
+
+...
+return (
+    <ComponentProvider>
+        <App />
+    </ComponentProvider>
+)
+
+and on the child components we need the values of that state we just need to import and call useComponentContext()
+destructuring makes everything cleaner as well.
+
+...
+    const {loginStats, login, logout} = useComponentContext()
+
